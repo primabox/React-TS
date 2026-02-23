@@ -6,15 +6,35 @@ interface Props {
   onAddToCart: (product: Product) => void;
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  categories: string[];
+  selectedCategory: string;
+  onCategoryChange: (value: string) => void;
 }
 
-export default function ProductList({ products, onAddToCart, searchQuery, onSearchChange }: Props) {
+export default function ProductList({ products, onAddToCart, searchQuery, onSearchChange, categories, selectedCategory, onCategoryChange }: Props) {
  return (
     <main className="flex-grow p-10">
       <div className="max-w-6xl mx-auto mb-10 text-center">
         <h1 className="text-4xl font-extrabold text-white mb-8">
           My Modern E-shop 🚀
         </h1>
+
+        {/* Category Filter Buttons */}
+        <div className="flex flex-wrap justify-center gap-2 mb-6">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => onCategoryChange(cat)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer ${
+                selectedCategory === cat
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
 
         {/* This is your Search Bar */}
         <div className="relative max-w-md mx-auto">
