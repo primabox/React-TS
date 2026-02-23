@@ -1,12 +1,11 @@
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-100 mt-20 py-12">
-      <div className="max-w-6xl mx-auto px-6 text-center">
-        <p className="text-gray-400 text-sm">
-          © 2026 CourseHub Inc. All rights reserved. 
-          <br />
-          Built with <span className="text-red-500 font-bold">♥</span> using Django & React.
+    <footer className="border-t border-zinc-800 py-10 mt-20">
+      <div className="max-w-6xl mx-auto px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <span className="text-xs font-bold tracking-[0.25em] uppercase text-zinc-600">CourseHub</span>
+        <p className="text-xs text-zinc-600">
+          &copy; 2026 CourseHub Inc. &mdash; Built with Django &amp; React
         </p>
       </div>
     </footer>
