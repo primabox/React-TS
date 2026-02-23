@@ -4,7 +4,8 @@ import Footer from "./components/Footer";
 import CartSidebar from "./components/CartSidebar";
 import type { Product } from "./types";
 import ProductList from "./components/ProductList";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+import { useCart } from "./hooks/useCart";
 
 function App() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -12,17 +13,10 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Logic: Cart Management
-  const [cart, setCart] = useState<Product[]>(() => {
-    const saved = localStorage.getItem("my_cart");
-    return saved ? JSON.parse(saved) : [];
-  });
+  // Cart state and actions
+  const { cart, addToCart, removeFromCart, checkout } = useCart();
 
-  useEffect(() => {
-    localStorage.setItem("my_cart", JSON.stringify(cart));
-  }, [cart]);
-
-  // Logic: API Fetch
+  // Fetch products from the API
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/products/")
       .then((res) => res.json())
@@ -30,18 +24,9 @@ function App() {
       .catch((err) => console.error("API error:", err));
   }, []);
 
-  // Handlers
-  const addToCart = (product: Product) => {
-    setCart([...cart, product]);
-    toast.success(`${product.name} added! 🛒`);
-  };
-
-  const removeFromCart = (index: number) => {
-    setCart(cart.filter((_, i) => i !== index));
-  };
-
-  // Memoized values for filtering
+  // Build category list
   const categories = ["All", ...new Set(products.map((p) => p.category))];
+  
   const filteredProducts = products.filter((p) => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
@@ -50,9 +35,16 @@ function App() {
 
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col">
-      <Toaster position="bottom-right" toastOptions={{ className: "bg-zinc-900! text-white!" }} />
+      {/* Toast notifications */}
+      <Toaster 
+        position="bottom-right" 
+        toastOptions={{ className: "bg-zinc-900! border! border-zinc-800! text-white! rounded-2xl!" }} 
+      />
       
-      <Navbar cartCount={cart.length} onCartClick={() => setIsCartOpen(true)} />
+      <Navbar 
+        cartCount={cart.length} 
+        onCartClick={() => setIsCartOpen(true)} 
+      />
 
       <ProductList
         products={filteredProducts} 
@@ -65,11 +57,13 @@ function App() {
       />
 
       <Footer />
+
       <CartSidebar 
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
         cartItems={cart} 
-        onRemoveItem={removeFromCart} 
+        onRemoveItem={removeFromCart}
+        onCheckout={checkout}
       />
     </div>
   );

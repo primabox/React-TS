@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Product } from "../types";
 
 interface Props {
@@ -5,10 +6,29 @@ interface Props {
   onClose: () => void;
   cartItems: Product[];
   onRemoveItem: (index: number) => void;
+  onCheckout: (email: string) => Promise<boolean>; // Prop for the hook function
 }
 
-export default function CartSidebar({ isOpen, onClose, cartItems, onRemoveItem }: Props) {
+export default function CartSidebar({ isOpen, onClose, cartItems, onRemoveItem, onCheckout }: Props) {
+  const [email, setEmail] = useState(""); // Holds the user's email
+
+  // Calculating total sum
   const total = cartItems.reduce((sum, item) => sum + parseFloat(item.price), 0);
+
+  // Triggered when clicking the button
+  const handleCheckoutClick = async () => {
+    if (!email.includes("@")) {
+      alert("Please enter a valid email address! 📧");
+      return;
+    }
+
+    const success = await onCheckout(email);
+    
+    if (success) {
+      setEmail(""); // Reset field on success
+      onClose();    // Hide sidebar
+    }
+  };
 
   return (
     <>
@@ -75,7 +95,7 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onRemoveItem }
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer with Checkout logic */}
         <div className="px-6 py-5 border-t border-zinc-800 shrink-0">
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm text-zinc-500">Total</span>
@@ -84,8 +104,24 @@ export default function CartSidebar({ isOpen, onClose, cartItems, onRemoveItem }
               <span className="text-sm font-medium text-zinc-500">CZK</span>
             </span>
           </div>
-          <button className="w-full bg-white text-zinc-900 py-3 rounded-xl text-sm font-bold hover:bg-zinc-200 transition-colors active:scale-95 cursor-pointer">
-            Checkout
+
+          {/* New Email Input */}
+          <div className="mb-4">
+            <input
+              type="email"
+              placeholder="Enter your email to buy"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-white text-sm focus:outline-none focus:border-zinc-500 transition-colors shadow-inner"
+            />
+          </div>
+
+          <button 
+            onClick={handleCheckoutClick}
+            disabled={cartItems.length === 0}
+            className="w-full bg-white text-zinc-900 py-3 rounded-xl text-sm font-bold hover:bg-zinc-200 transition-colors active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Complete Order
           </button>
         </div>
       </div>

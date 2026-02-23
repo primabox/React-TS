@@ -36,13 +36,13 @@ export default function ProductList({ products, onAddToCart, searchQuery, onSear
           ))}
         </div>
 
-        {/* This is your Search Bar */}
+        {/* Search bar */}
         <div className="relative max-w-md mx-auto">
           <input
             type="text"
             placeholder="Search courses..."
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)} // Updates the state in App.tsx
+            onChange={(e) => onSearchChange(e.target.value)}
             className="w-full px-6 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
           />
           <span className="absolute right-4 top-3 opacity-50">🔍</span>
@@ -82,7 +82,7 @@ export default function ProductList({ products, onAddToCart, searchQuery, onSear
             </div>
           ))
         ) : (
-          /* Show this when no products match the search */
+          /* No results */
           <div className="col-span-full text-center py-20">
             <p className="text-zinc-500 text-xl italic">No products found... 😢</p>
           </div>
