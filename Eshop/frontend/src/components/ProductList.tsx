@@ -1,93 +1,107 @@
+﻿import { useState, useMemo } from "react";
+import { Search } from "lucide-react";
 import type { Product } from "../types";
-import { ProductCard } from "./ProductCard";
+import ProductCard from "./ProductCard";
+import ProductSkeleton from "./ProductSkeleton";
 
-interface Props {
+interface ProductListProps {
   products: Product[];
+  isLoading: boolean;
   onAddToCart: (product: Product) => void;
-  searchQuery: string;
-  onSearchChange: (value: string) => void;
-  categories: string[];
-  selectedCategory: string;
-  onCategoryChange: (value: string) => void;
 }
 
-export default function ProductList({ products, onAddToCart, searchQuery, onSearchChange, categories, selectedCategory, onCategoryChange }: Props) {
- return (
-    <main className="flex-grow p-10">
-      <div className="max-w-6xl mx-auto mb-10 text-center">
-        <h1 className="text-4xl font-extrabold text-white mb-8">
-          My Modern E-shop 🚀
-        </h1>
+export default function ProductList({ products, isLoading, onAddToCart }: ProductListProps) {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [search, setSearch] = useState("");
 
-        {/* Category Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => onCategoryChange(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer ${
-                selectedCategory === cat
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
+    return ["All", ...cats];
+  }, [products]);
+
+  const filtered = useMemo(() => {
+    return products.filter((p) => {
+      const matchCat = activeCategory === "All" || p.category === activeCategory;
+      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
+      return matchCat && matchSearch;
+    });
+  }, [products, activeCategory, search]);
+
+  return (
+    <main className="min-h-screen bg-zinc-950">
+      <section className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end mb-20">
+          <div>
+            <p className="text-[10px] tracking-[0.3em] text-zinc-500 uppercase mb-4">
+              Current Collection
+            </p>
+            <h1 className="text-5xl md:text-6xl font-serif italic font-light text-zinc-100 leading-[1.1]">
+              Crafted for<br />the curious
+            </h1>
+          </div>
+          <div className="md:text-right">
+            <p className="text-sm text-zinc-500 leading-relaxed max-w-xs md:ml-auto">
+              Thoughtfully designed pieces for those who value quality and intention in every choice.
+            </p>
+          </div>
         </div>
 
-        {/* Search bar */}
-        <div className="relative max-w-md mx-auto">
-          <input
-            type="text"
-            placeholder="Search courses..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full px-6 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-          />
-          <span className="absolute right-4 top-3 opacity-50">🔍</span>
+        <div className="border-t border-zinc-800 pt-8 mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="flex items-center gap-1 flex-wrap">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 text-xs tracking-wider uppercase transition-colors duration-200 ${
+                  activeCategory === cat
+                    ? "bg-zinc-100 text-zinc-900 font-semibold"
+                    : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <div className="relative">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-8 pr-4 py-2 bg-transparent border-b border-zinc-700 text-xs text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-400 w-52 tracking-wide transition-colors"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.length > 0 ? (
-          products.map((item) => (
-            <div key={item.id} className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 transition-transform hover:scale-105">
-              <span className="text-xs font-semibold uppercase tracking-wider text-blue-400 bg-blue-900/30 px-3 py-1 rounded-full">
-                {item.category}
-              </span>
-              <h2 className="text-2xl font-bold text-white mt-4">{item.name}</h2>
-              
-              <div className="mt-2">
-                {item.stock > 0 ? (
-                  <p className="text-sm text-green-400 italic">In Stock: {item.stock} pcs</p>
-                ) : (
-                  <p className="text-sm text-red-500 font-bold underline">Sold Out</p>
-                )}
-              </div>
-
-              <p className="text-zinc-400 mt-2 line-clamp-3">{item.description}</p>
-              <div className="mt-6 flex items-center justify-between">
-                <span className="text-2xl font-black text-white">{item.price} CZK</span>
-                <button
-                  disabled={item.stock === 0}
-                  onClick={() => onAddToCart(item)}
-                  className={`px-5 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
-                    item.stock > 0 ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                  }`}
-                >
-                  {item.stock > 0 ? 'Buy Now' : 'Out of Stock'}
-                </button>
-              </div>
-            </div>
-          ))
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ProductSkeleton key={i} />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-32 text-center">
+            {products.length === 0 ? (
+              <>
+                <p className="text-4xl font-serif italic text-zinc-700 mb-3">No products yet</p>
+                <p className="text-sm text-zinc-600">Check back soon.</p>
+              </>
+            ) : (
+              <>
+                <p className="text-4xl font-serif italic text-zinc-700 mb-3">No results</p>
+                <p className="text-sm text-zinc-600">Try a different search or category.</p>
+              </>
+            )}
+          </div>
         ) : (
-          /* No results */
-          <div className="col-span-full text-center py-20">
-            <p className="text-zinc-500 text-xl italic">No products found... 😢</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} />
+            ))}
           </div>
         )}
-      </div>
+      </section>
     </main>
   );
 }

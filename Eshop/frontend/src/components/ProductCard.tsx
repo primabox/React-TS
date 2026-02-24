@@ -1,57 +1,62 @@
+﻿import { useState } from "react";
+import { Plus } from "lucide-react";
 import type { Product } from "../types";
+import { formatPrice } from "../utils/format";
 
-interface Props {
+interface ProductCardProps {
   product: Product;
-  onAddToCart: (p: Product) => void;
+  onAddToCart: (product: Product) => void;
 }
 
-export const ProductCard = ({ product, onAddToCart }: Props) => {
-  const inStock = product.stock > 0;
+export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const [hovered, setHovered] = useState(false);
+  const outOfStock = product.stock === 0;
 
   return (
-    <div className="group bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex flex-col gap-3 hover:border-zinc-600 hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.06)] transition-all duration-300 cursor-default">
-      {/* Top row: category + stock badge */}
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-          {product.category}
-        </span>
-        {inStock ? (
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
-            In Stock
-          </span>
-        ) : (
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full">
+    <div
+      className="group cursor-pointer animate-fade-up"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="relative overflow-hidden bg-zinc-800 aspect-[4/5] mb-4">
+        <div className="absolute inset-0 flex items-center justify-center text-zinc-600 text-xs tracking-widest uppercase">
+          No Image
+        </div>
+
+        {outOfStock ? (
+          <div className="absolute top-3 left-3 px-2 py-1 bg-zinc-950/80 text-zinc-400 text-[10px] tracking-widest uppercase">
             Sold Out
-          </span>
+          </div>
+        ) : product.stock <= 3 ? (
+          <div className="absolute top-3 left-3 px-2 py-1 bg-zinc-950/80 text-amber-400 text-[10px] tracking-widest uppercase">
+            Only {product.stock} left
+          </div>
+        ) : null}
+
+        {!outOfStock && (
+          <button
+            onClick={() => onAddToCart(product)}
+            className={`absolute bottom-0 left-0 right-0 py-3 bg-white text-zinc-900 text-xs font-semibold tracking-[0.15em] uppercase flex items-center justify-center gap-2 transition-transform duration-300 ease-out ${
+              hovered ? "translate-y-0" : "translate-y-full"
+            }`}
+          >
+            <Plus size={13} strokeWidth={2.5} />
+            Add to Bag
+          </button>
         )}
       </div>
 
-      {/* Product name */}
-      <h2 className="text-base font-bold text-zinc-100 leading-snug group-hover:text-white transition-colors duration-200">
-        {product.name}
-      </h2>
-
-      {/* Description */}
-      <p className="text-sm text-zinc-500 line-clamp-3 leading-relaxed grow">{product.description}</p>
-
-      {/* Price + button */}
-      <div className="flex items-center justify-between pt-3 border-t border-zinc-800">
-        <span className="text-xl font-bold text-zinc-100">
-          {product.price}{" "}
-          <span className="text-sm font-medium text-zinc-500">CZK</span>
-        </span>
-        <button
-          disabled={!inStock}
-          onClick={() => onAddToCart(product)}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 active:scale-95 ${
-            inStock
-              ? "bg-white text-zinc-900 hover:bg-zinc-200 cursor-pointer"
-              : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
-          }`}
-        >
-          {inStock ? "Add to Cart" : "Sold Out"}
-        </button>
+      <div>
+        <p className="text-sm text-zinc-200 font-medium leading-snug mb-1 group-hover:text-white transition-colors">
+          {product.name}
+        </p>
+        {product.category && (
+          <p className="text-[11px] text-zinc-500 tracking-wider uppercase mb-1">
+            {product.category}
+          </p>
+        )}
+        <p className="text-sm text-zinc-400">{formatPrice(product.price)}</p>
       </div>
     </div>
   );
-};
+}
