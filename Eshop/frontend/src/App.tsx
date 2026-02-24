@@ -18,7 +18,7 @@ function App() {
 
   // Fetch products from the API
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/products/")
+    fetch("http://localhost:30001/api/products/")
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error("API error:", err));
