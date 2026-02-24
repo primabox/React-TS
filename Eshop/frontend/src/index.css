@@ -1,11 +1,18 @@
 ﻿@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap");
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
   font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  background: #fafafa;
+  color: #18181b;
+}
+
+.dark body {
   background: #0c0a09;
   color: #e7e5e4;
 }

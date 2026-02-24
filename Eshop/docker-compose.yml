@@ -17,6 +17,6 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules  # PŘIDEJ TENTO ŘÁDEK
+      - /app/node_modules 
     depends_on:
       - backend

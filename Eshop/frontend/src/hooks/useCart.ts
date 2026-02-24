@@ -21,17 +21,17 @@ export function useCart() {
     localStorage.setItem("studio_cart_v2", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, qty = 1) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === product.id);
       if (existing) {
         toast.success(`${product.name} quantity updated`);
         return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === product.id ? { ...i, quantity: i.quantity + qty } : i
         );
       }
-      toast.success(`${product.name} added to bag`);
-      return [...prev, { ...product, quantity: 1 }];
+      toast.success(`${qty > 1 ? `${qty}× ` : ""}${product.name} added to bag`);
+      return [...prev, { ...product, quantity: qty }];
     });
   };
 
@@ -68,6 +68,10 @@ export function useCart() {
       return false;
     }
 
+    const token = localStorage.getItem("studio_token");
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
     const orderData = {
       customer_email: email,
       total_price: cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0),
@@ -77,7 +81,7 @@ export function useCart() {
     try {
       const response = await fetch("http://localhost:30001/api/orders/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(orderData),
       });
 
@@ -86,7 +90,8 @@ export function useCart() {
         setCart([]);
         return true;
       } else {
-        toast.error("Order failed. Please try again.");
+        const err = await response.json().catch(() => ({}));
+        toast.error(err.error || "Order failed. Please try again.");
         return false;
       }
     } catch {

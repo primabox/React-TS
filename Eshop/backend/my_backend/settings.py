@@ -81,8 +81,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('DB_NAME', 'eshop_db'),
-        'USER': os.environ.get('DB_USER', 'roman'),
-        'PASSWORD': os.environ.get('DB_PASS', 'heslo123'),
+        'USER': os.environ.get('DB_USER', 'Admin'),
+        'PASSWORD': os.environ.get('DB_PASS', 'Admin'),
         'HOST': os.environ.get('DB_HOST', 'postgres-service'),
         'PORT': '5432',
     }
@@ -157,3 +157,19 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# JWT Auth
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+}

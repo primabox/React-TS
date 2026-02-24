@@ -1,29 +1,46 @@
-# E-shop Project
+# E-shop — Studio
 
-Full-stack e-commerce application built with modern technologies and deployed using Kubernetes on Docker Desktop.
+Full-stack e-commerce application for digital courses and design resources. Built with a Django REST API, a React TypeScript frontend, and deployed as containerised microservices on Kubernetes.
+
+---
 
 ## Tech Stack
 
 ### Frontend
-- **React 18** - UI library
-- **TypeScript** - Type-safe JavaScript
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Utility-first CSS framework
-- **React Hot Toast** - Toast notifications
+
+| Technology | Version | What it does in this project |
+|---|---|---|
+| **React** | 18 | Drives the entire UI — product grid, cart sidebar, modals, hero carousel, and all interactive state |
+| **TypeScript** | 5 | Enforces types across components, hooks, and API responses so bugs are caught at compile time rather than runtime |
+| **Vite** | 5 | Builds the app into a static `dist/` folder served by nginx in production; provides instant HMR in development |
+| **Tailwind CSS** | 4 | Handles all styling via utility classes, including the light/dark mode toggle using a custom `dark:` variant |
+| **Lucide React** | latest | Icon set used throughout — cart, heart, sun/moon, user, menu, arrows, etc. |
+| **React Hot Toast** | 2 | Shows non-blocking feedback toasts for cart actions, wishlist changes, sold-out warnings, and order results |
 
 ### Backend
-- **Django 6.0** - Python web framework
-- **Django REST Framework** - RESTful API toolkit
-- **django-cors-headers** - CORS handling
-- **psycopg2-binary** - PostgreSQL adapter
+
+| Technology | Version | What it does in this project |
+|---|---|---|
+| **Django** | 6 | Web framework that handles routing, admin panel, ORM, and the overall app structure |
+| **Django REST Framework** | 3 | Turns Django models into a JSON REST API consumed by the React frontend — products, orders endpoints |
+| **djangorestframework-simplejwt** | 5 | Issues and validates JWT access tokens for user login and registration; tokens are stored in the browser and sent with order requests |
+| **django-cors-headers** | 4 | Allows the frontend (port 30002) to call the backend API (port 30001) across origins without browser CORS errors |
+| **psycopg2-binary** | 2 | PostgreSQL driver — lets Django talk to the Postgres database running in its own container |
 
 ### Database
-- **PostgreSQL 15** - Relational database
 
-### DevOps & Infrastructure
-- **Docker** - Containerization
-- **Kubernetes** - Container orchestration (Docker Desktop)
-- **kubectl** - Kubernetes CLI
+| Technology | Version | What it does in this project |
+|---|---|---|
+| **PostgreSQL** | 15 | Stores all persistent data — products with stock levels, orders with customer info and item lists, and user accounts |
+
+### Infrastructure & DevOps
+
+| Technology | What it does in this project |
+|---|---|
+| **Docker** | Packages each service (frontend, backend, database) into its own isolated container image with all dependencies bundled. The frontend image uses a two-stage build: Node builds the Vite app, then nginx serves the static files. |
+| **nginx** | Runs inside the frontend container — serves the compiled React app and proxies any `/api/` requests so the browser always talks to the same origin |
+| **Kubernetes** | Orchestrates all three containers on Docker Desktop. Manages restarts if a pod crashes, controls networking between services via internal DNS (`postgres-service`, `backend-service`), and exposes the frontend and backend to the host machine via NodePort services |
+| **kubectl** | CLI used to apply manifests, restart deployments after rebuilds, exec into pods to run migrations, and tail logs |
 
 ---
 
@@ -195,8 +212,8 @@ Eshop/
 
 ### Database (PostgreSQL)
 - **Database Name:** `eshop_db`
-- **User:** `roman`
-- **Password:** `heslo123`
+- **User:** `Admin`
+- **Password:** `Admin`
 
 ---
 
