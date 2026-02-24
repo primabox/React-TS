@@ -1,0 +1,23 @@
+services:
+  # Configuration for the Django REST API
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    # Syncs local files with the container for live updates
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # Configuration for the React Vite frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    # Syncs local files so React can hot-reload changes
+    volumes:
+      - ./frontend:/app
+    # Ensures backend starts before the frontend
+    depends_on:
+      - backend
