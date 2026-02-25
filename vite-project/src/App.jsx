@@ -27,10 +27,14 @@ export default function App() {
     );
   }
 
+
+
+
   return (
     <>
       <NewTodoForm onSubmit={addTodo} />
       <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
+      <NewTodoForm />
     </>
   );
 }
