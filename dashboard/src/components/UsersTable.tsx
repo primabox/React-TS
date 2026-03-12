@@ -20,18 +20,8 @@ type User     = typeof initialUsers[0];
 type SortKey  = 'name' | 'role' | 'status';
 type SortDir  = 'asc' | 'desc';
 
-const card = { background: 'rgba(255,255,255,0.03)', border: '1px solid #1a1a1a' };
-
-const inputStyle = {
-  background: '#111111',
-  border: '1px solid #1f1f1f',
-  borderRadius: '8px',
-  color: '#ffffff',
-  outline: 'none',
-  fontFamily: 'Inter, sans-serif',
-  fontSize: '13px',
-  transition: 'border-color 0.15s',
-} as React.CSSProperties;
+const inputCls = 'w-full px-3 py-2.5 bg-[#111111] border border-[#1f1f1f] rounded-lg text-white text-sm outline-none focus:border-red-600/40 transition-colors placeholder:text-[#4b5563]';
+const inputErrCls = 'w-full px-3 py-2.5 bg-[#111111] border border-red-600/50 rounded-lg text-white text-sm outline-none focus:border-red-600/60 transition-colors placeholder:text-[#4b5563]';
 
 /* ── Add user modal ── */
 interface AddUserModalProps { onClose: () => void; onAdd: (u: User) => void; }
@@ -65,45 +55,38 @@ function AddUserModal({ onClose, onAdd }: AddUserModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className="relative w-full max-w-md overflow-hidden rounded-xl p-7"
-        style={{ background: '#111111', border: '1px solid #1f1f1f', boxShadow: '0 24px 64px rgba(0,0,0,0.8)' }}
-      >
+      <div className="relative w-full max-w-md overflow-hidden rounded-xl p-7 bg-[#111111] border border-[#1f1f1f] shadow-[0_24px_64px_rgba(0,0,0,0.8)]">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-semibold" style={{ color: '#ffffff' }}>Přidat uživatele</h2>
+          <h2 className="text-base font-semibold text-white">Přidat uživatele</h2>
           <button onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors"
-            style={{ color: '#6b7280' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors text-[#6b7280] hover:bg-white/6"
           ><X size={15} /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: '#6b7280' }}>Jméno</label>
+            <label className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]">Jméno</label>
             <input type="text" placeholder="Jan Novák" value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full px-3 py-2.5"
-              style={{ ...inputStyle, ...(errors.name ? { borderColor: 'rgba(220,38,38,0.5)' } : {}) }}
+              className={errors.name ? inputErrCls : inputCls}
             />
-            {errors.name && <p className="text-xs" style={{ color: '#ef4444' }}>{errors.name}</p>}
+            {errors.name && <p className="text-xs text-red-400">{errors.name}</p>}
           </div>
           <div className="space-y-1.5">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: '#6b7280' }}>E-mail</label>
+            <label className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]">E-mail</label>
             <input type="text" placeholder="jan@nexus.cz" value={form.email}
               onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-              className="w-full px-3 py-2.5"
-              style={{ ...inputStyle, ...(errors.email ? { borderColor: 'rgba(220,38,38,0.5)' } : {}) }}
+              className={errors.email ? inputErrCls : inputCls}
             />
-            {errors.email && <p className="text-xs" style={{ color: '#ef4444' }}>{errors.email}</p>}
+            {errors.email && <p className="text-xs text-red-400">{errors.email}</p>}
           </div>
           <div className="grid grid-cols-2 gap-3">
             {([['Role', 'role', ROLES], ['Status', 'status', STATUSES]] as const).map(([label, key, options]) => (
               <div key={key} className="space-y-1.5">
-                <label className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: '#6b7280' }}>{label}</label>
+                <label className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]">{label}</label>
                 <select value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                  className="w-full px-3 py-2.5" style={{ ...inputStyle, cursor: 'pointer' }}
+                  className={`${inputCls} cursor-pointer`}
                 >
-                  {options.map(o => <option key={o} value={o} style={{ background: '#111111' }}>{o}</option>)}
+                  {options.map(o => <option key={o} value={o} className="bg-[#111111]">{o}</option>)}
                 </select>
               </div>
             ))}
@@ -135,17 +118,16 @@ function ConfirmDeleteDialog({ name, onConfirm, onCancel }: ConfirmDeleteProps) 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/70" onClick={onCancel} />
-      <div className="relative w-full max-w-sm overflow-hidden rounded-xl p-6"
-        style={{ background: '#111111', border: '1px solid rgba(220,38,38,0.25)', boxShadow: '0 24px 64px rgba(0,0,0,0.8)' }}
-      >
+      <div className="relative w-full max-w-sm overflow-hidden rounded-xl p-6
+                      bg-[#111111] border border-red-600/25 shadow-[0_24px_64px_rgba(0,0,0,0.8)]">
         <div className="flex items-center gap-3 mb-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: 'rgba(220,38,38,0.1)' }}>
-            <AlertTriangle size={16} style={{ color: '#ef4444' }} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-600/10">
+            <AlertTriangle size={16} className="text-red-400" />
           </div>
-          <h2 className="text-sm font-semibold" style={{ color: '#ffffff' }}>Odstranit uživatele</h2>
+          <h2 className="text-sm font-semibold text-white">Odstranit uživatele</h2>
         </div>
-        <p className="text-sm mb-6" style={{ color: '#6b7280' }}>
-          Opravdu chcete odstranit <span style={{ color: '#e5e7eb', fontWeight: 600 }}>{name}</span>? Tuto akci nelze vzít zpět.
+        <p className="text-sm mb-6 text-[#6b7280]">
+          Opravdu chcete odstranit <span className="text-[#e5e7eb] font-semibold">{name}</span>? Tuto akci nelze vzít zpět.
         </p>
         <div className="flex gap-3">
           <button onClick={onCancel} className="btn-red-outline flex-1 rounded-lg px-4 py-2.5 text-sm">
@@ -162,10 +144,10 @@ function ConfirmDeleteDialog({ name, onConfirm, onCancel }: ConfirmDeleteProps) 
 
 /* ── Sort indicator icon ── */
 function SortIcon({ col, sortKey, sortDir }: { col: SortKey; sortKey: SortKey | null; sortDir: SortDir }) {
-  if (sortKey !== col) return <ChevronUp size={11} style={{ opacity: 0.25 }} />;
+  if (sortKey !== col) return <ChevronUp size={11} className="opacity-25" />;
   return sortDir === 'asc'
-    ? <ChevronUp   size={11} style={{ color: '#ef4444' }} />
-    : <ChevronDown size={11} style={{ color: '#ef4444' }} />;
+    ? <ChevronUp   size={11} className="text-red-500" />
+    : <ChevronDown size={11} className="text-red-500" />;
 }
 
 /* ── Main export ── */
@@ -233,23 +215,20 @@ export function UsersTable() {
       {confirmDelete && <ConfirmDeleteDialog name={confirmDelete.name} onConfirm={doDelete} onCancel={() => setConfirmDelete(null)} />}
 
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3 rounded-xl p-3" style={card}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl p-3 bg-white/3 border border-[#1a1a1a]">
         <div className="relative flex-1 max-w-sm">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#6b7280' }} />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]" />
           <input
             type="text" placeholder="Hledat uživatele…"
-            className="w-full py-2 pl-9 pr-4 text-sm" style={inputStyle}
+            className="w-full py-2 pl-9 pr-4 text-sm bg-[#111111] border border-[#1f1f1f] rounded-lg text-white
+                       outline-none focus:border-red-600/40 placeholder:text-[#4b5563] transition-colors"
             onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
-            onFocus={e => (e.target.style.borderColor = 'rgba(220,38,38,0.4)')}
-            onBlur={e  => (e.target.style.borderColor = '#1f1f1f')}
           />
         </div>
         <div className="flex items-center gap-2">
           <button onClick={exportCSV}
-            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors duration-150"
-            style={{ border: '1px solid #1f1f1f', color: '#6b7280' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#e5e7eb'; (e.currentTarget as HTMLElement).style.borderColor = '#2a2a2a'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#6b7280'; (e.currentTarget as HTMLElement).style.borderColor = '#1f1f1f'; }}
+            className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all
+                       border border-[#1f1f1f] text-[#6b7280] hover:text-[#e5e7eb] hover:border-[#2a2a2a]"
           >
             <Download size={13} /> Export CSV
           </button>
@@ -260,54 +239,47 @@ export function UsersTable() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-xl" style={card}>
+      <div className="overflow-hidden rounded-xl bg-white/3 border border-[#1a1a1a]">
+        <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead>
-            <tr style={{ borderBottom: '1px solid #1a1a1a' }}>
+            <tr className="border-b border-[#1a1a1a]">
               {sortableCols.map(({ key, label }) => (
-                <th key={key} className="px-5 py-3.5" style={{ color: '#6b7280' }}>
+                <th key={key} className="px-5 py-3.5 text-[#6b7280]">
                   <span className="th-sort text-[10px] font-semibold uppercase tracking-[0.12em]"
                     onClick={() => toggleSort(key)}>
                     {label} <SortIcon col={key} sortKey={sortKey} sortDir={sortDir} />
                   </span>
                 </th>
               ))}
-              <th className="px-5 py-3.5 text-right text-[10px] font-semibold uppercase tracking-[0.12em]"
-                style={{ color: '#6b7280' }}></th>
+              <th className="px-5 py-3.5 text-right text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]"></th>
             </tr>
           </thead>
           <tbody>
             {paginated.map(user => (
-              <tr key={user.id} className="transition-colors" style={{ borderBottom: '1px solid #141414' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.02)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
+              <tr key={user.id} className="border-b border-[#141414] hover:bg-white/2 transition-colors">
                 <td className="px-5 py-3.5">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-semibold"
-                      style={{ background: 'rgba(255,255,255,0.06)', color: '#9ca3af' }}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-semibold bg-white/6 text-[#9ca3af]">
                       {user.name.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium" style={{ color: '#e5e7eb' }}>{user.name}</p>
-                      <p className="text-xs" style={{ color: '#6b7280' }}>{user.email}</p>
+                      <p className="text-sm font-medium text-[#e5e7eb]">{user.name}</p>
+                      <p className="text-xs text-[#6b7280]">{user.email}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-3.5 text-sm" style={{ color: '#9ca3af' }}>{user.role}</td>
+                <td className="px-5 py-3.5 text-sm text-[#9ca3af]">{user.role}</td>
                 <td className="px-5 py-3.5">
-                  <span className="rounded px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide"
-                    style={user.status === 'Aktivní'
-                      ? { background: 'rgba(34,197,94,0.08)',  color: '#4ade80' }
-                      : { background: 'rgba(255,255,255,0.04)', color: '#6b7280' }
-                    }
-                  >{user.status}</span>
+                  <span className={`rounded px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
+                    user.status === 'Aktivní'
+                      ? 'bg-emerald-500/10 text-emerald-400'
+                      : 'bg-white/4 text-[#6b7280]'
+                  }`}>{user.status}</span>
                 </td>
                 <td className="px-5 py-3.5 text-right">
                   <button onClick={() => setConfirmDelete({ id: user.id, name: user.name })}
-                    className="rounded-lg p-1.5 transition-all" style={{ color: 'rgba(255,255,255,0.15)' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ef4444'; (e.currentTarget as HTMLElement).style.background = 'rgba(220,38,38,0.08)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                    className="rounded-lg p-1.5 transition-all text-white/15 hover:text-red-400 hover:bg-red-600/8"
                   ><Trash2 size={15} /></button>
                 </td>
               </tr>
@@ -315,30 +287,27 @@ export function UsersTable() {
             {sorted.length === 0 && (
               <tr><td colSpan={4} className="px-5 py-14 text-center">
                 <div className="flex flex-col items-center gap-2">
-                  <Search size={24} style={{ color: 'rgba(255,255,255,0.08)' }} />
-                  <p className="text-sm" style={{ color: '#6b7280' }}>Žádní uživatelé nenalezeni</p>
+                  <Search size={24} className="text-white/10" />
+                  <p className="text-sm text-[#6b7280]">Žádní uživatelé nenalezeni</p>
                 </div>
               </td></tr>
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Pagination footer */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid #1a1a1a' }}>
-            <span className="text-xs" style={{ color: '#6b7280' }}>
+          <div className="flex items-center justify-between px-5 py-3 border-t border-[#1a1a1a]">
+            <span className="text-xs text-[#6b7280]">
               {Math.min((safePage - 1) * PAGE_SIZE + 1, sorted.length)}–{Math.min(safePage * PAGE_SIZE, sorted.length)} z {sorted.length} uživatelů
             </span>
             <div className="flex items-center gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                 <button key={p} onClick={() => setPage(p)}
-                  className="h-7 w-7 rounded-md text-xs font-medium transition-colors"
-                  style={p === safePage
-                    ? { background: '#dc2626', color: '#ffffff' }
-                    : { color: '#6b7280' }
-                  }
-                  onMouseEnter={e => { if (p !== safePage) (e.currentTarget as HTMLElement).style.color = '#e5e7eb'; }}
-                  onMouseLeave={e => { if (p !== safePage) (e.currentTarget as HTMLElement).style.color = '#6b7280'; }}
+                  className={`h-7 w-7 rounded-md text-xs font-medium transition-colors ${
+                    p === safePage ? 'bg-red-600 text-white' : 'text-[#6b7280] hover:text-[#e5e7eb]'
+                  }`}
                 >{p}</button>
               ))}
             </div>
