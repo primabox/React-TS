@@ -3,6 +3,7 @@ export interface Reservation {
     customerName: string;
     dateTime: string;
     place: string;
-    peopleCount: number;
+    adults: number;
+    children: number;
 }
 
